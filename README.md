@@ -1,10 +1,8 @@
-# CrediYa-Mx
-Es una app de préstamos personales sin checar número de credito. Fácil, rápido y seguro 
-name: Build Android App
+name: Compilar Android
 
 on:
   push:
-    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,20 +18,8 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Decode Keystore
-      run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/crediya-key.jks
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
 
     - name: Build with Gradle
-      run: ./gradlew bundleRelease
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-aab
-        path: app/build/outputs/bundle/release/app-release.aab
-        
+      run: gradle bundleRelease
